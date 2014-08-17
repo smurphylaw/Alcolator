@@ -8,11 +8,10 @@
 
 #import "BLCViewController.h"
 
-@interface BLCViewController ()
-@property (weak, nonatomic) IBOutlet UITextField *beerPercentTextField;
-@property (weak, nonatomic) IBOutlet UISlider *beerCountSlider;
-@property (weak, nonatomic) IBOutlet UILabel *resultLabel;
-@property (weak, nonatomic) IBOutlet UILabel *beerCounter;
+@interface BLCViewController () <UITextFieldDelegate>
+
+@property (weak, nonatomic) UIButton *calculateButton;
+@property (weak, nonatomic) UITapGestureRecognizer *hideKeyboardTapGestureRecognizer;
 
 @end
 
@@ -20,8 +19,43 @@
 
 - (void)viewDidLoad
 {
+    // Calls the superclass' implementation
     [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+    
+    // Set our primary view's background color to cyanColor
+    self.view.backgroundColor = [UIColor redColor];
+    
+    // Tells the text field that 'self', this instance of 'BLCViewController' should be treated as the text field's delegate
+    self.beerPercentTextField.delegate = self;
+    
+    // Set the background color for beerPercentTextField to white
+    self.beerPercentTextField.backgroundColor = [UIColor lightGrayColor];
+    
+    // Set the placeholder text
+    self.beerPercentTextField.placeholder = NSLocalizedString(@"% Alcohol Content Per Beer", @"Beer percent placeholder text");
+    
+    // Tells 'self.beerCountSlider' that when its value changes, it should call '[self -sliderViewChange:]'
+    // This is equivalent to connecting the IBAction
+    [self.beerCountSlider addTarget:self action:@selector(sliderValueChange:) forControlEvents:UIControlEventValueChanged];
+    self.beerCountSlider.minimumTrackTintColor = [UIColor yellowColor];
+    
+    // Set the minimum and maximum number of beers
+    self.beerCountSlider.minimumValue = 1;
+    self.beerCountSlider.maximumValue = 10;
+    
+    // Tells 'self.calculateButton' that when a finger is lifted from the button while still inside its bounds, to call '[self -buttonPressed:]'.
+    [self.calculateButton addTarget:self action:@selector(buttonPressed:) forControlEvents:UIControlEventTouchUpInside];
+    
+    // Set the title of the button
+    [self.calculateButton setTitle:NSLocalizedString(@"Calculate", @"Calculate command") forState:UIControlStateNormal];
+    self.calculateButton.titleLabel.font = [UIFont fontWithName: @"Helvetica-Bold" size:20.0f];
+    self.calculateButton.tintColor = [UIColor whiteColor];
+    
+    // Tells the tap gesture recognizer to call '[self -tapGestureDidFire:]' when it detect a tap.
+    [self.hideKeyboardTapGestureRecognizer addTarget:self action:@selector(tapGestureDidFire:)];
+    
+    // Gets rid of the minimum number of lines on the label
+    self.resultLabel.numberOfLines = 0;
 }
 
 - (void)didReceiveMemoryWarning
@@ -30,7 +64,7 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (IBAction)textFieldDidChange:(UITextField *)sender {
+- (void)textFieldDidChange:(UITextField *)sender {
     // Make sure the text is a number
     NSString *enteredText = sender.text;
     float enteredNumber = [enteredText floatValue];
@@ -41,7 +75,7 @@
     }
 }
 
-- (IBAction)sliderValueChange:(UISlider *)sender {
+- (void)sliderValueChange:(UISlider *)sender {
     NSLog(@"Slider value changed to %f", sender.value);
     [self.beerPercentTextField resignFirstResponder];
     
@@ -50,10 +84,11 @@
     
     NSString *beerCountText = [NSString stringWithFormat:NSLocalizedString(@"Number of Beers: %d", nil), numberOfBeers];
     self.beerCounter.text = beerCountText;
+    self.beerCounter.textColor = [UIColor whiteColor];
      
 }
 
-- (IBAction)buttonPressed:(UIButton *)sender {
+- (void)buttonPressed:(UIButton *)sender {
     
     [self.beerPercentTextField resignFirstResponder];
     
@@ -96,12 +131,86 @@
     
     NSString *resultText = [NSString stringWithFormat:NSLocalizedString(@"%d %@ contains as much alcohol as %.1f %@ of wine.", nil), numberOfBeers, beerText, numberOfWineGlassesForEquivalentAlcoholAmount, wineText];
     self.resultLabel.text = resultText;
+    self.resultLabel.textColor = [UIColor whiteColor];
+    self.resultLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:20.0f];
 }
 
-- (IBAction)tapGestureDidFire:(UITapGestureRecognizer *)sender {
+- (void)tapGestureDidFire:(UITapGestureRecognizer *)sender {
     [self.beerPercentTextField resignFirstResponder];
 }
 
+- (void) loadView {
+    // Allocate and initialize the all-encompassing view
+    self.view = [[UIView alloc] init];
+    
+    // Allocate and initialize each of our views and the gesture recognizer
+    UITextField *textField = [[UITextField alloc] init];
+    UISlider *slider = [[UISlider alloc] init];
+    UILabel *label = [[UILabel alloc] init];
+    UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] init];
+    
+    // Add each view and the gesture recognizer as the view's subviews
+    [self.view addSubview:textField];
+    [self.view addSubview:slider];
+    [self.view addSubview:label];
+    [self.view addSubview:button];
+    [self.view addGestureRecognizer:tap];
+    
+    // Assign the views and gesture recognizer to our properties
+    self.beerPercentTextField = textField;
+    self.beerCountSlider = slider;
+    self.resultLabel = label;
+    self.calculateButton = button;
+    self.hideKeyboardTapGestureRecognizer = tap;
+    self.beerCounter = label;
+    
+}
 
+- (void) viewWillLayoutSubviews {
+    [super viewWillLayoutSubviews];
+
+    // [UIApplication sharedApplication] is a Singleton object that can be thought
+    // of as a global object for you to use. It has some information on the
+    // app.
+    
+    /* if ([UIScreen mainScreen].bounds.size.height == 568) {
+        // iPhone 5
+    } else {
+        // iPhone 4
+    }
+    */
+    
+    CGRect screenBounds = self.view.bounds;
+    
+    CGFloat viewWidth = screenBounds.size.width;
+    CGFloat padding = 20;
+    CGFloat itemWidth = viewWidth - padding - padding;
+    CGFloat itemHeight = 44;
+    
+    BOOL isPhone = [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone;
+    
+    if (UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)) {
+        itemHeight = (isPhone) ? 44 : 88;
+    } else {
+        itemHeight = (isPhone) ? 22 : 44;
+    }
+    
+    self.beerPercentTextField.frame = CGRectMake(padding, padding + 10, itemWidth, itemHeight);
+            
+            
+    CGFloat bottomOfTextField = CGRectGetMaxY(self.beerPercentTextField.frame);
+    self.beerCountSlider.frame = CGRectMake(padding, bottomOfTextField + padding, itemWidth, itemHeight);
+            
+    CGFloat bottomOfSlider = CGRectGetMaxY(self.beerCountSlider.frame);
+    self.beerCounter.frame = CGRectMake(padding, bottomOfSlider + padding, itemWidth, itemHeight);
+    
+    CGFloat bottomOfCountLabel = CGRectGetMaxY(self.beerCounter.frame);
+    self.resultLabel.frame = CGRectMake(padding, bottomOfCountLabel + padding, itemWidth, itemHeight * 4);
+            
+    CGFloat bottomOfLabel = CGRectGetMaxY(self.resultLabel.frame);
+    self.calculateButton.frame = CGRectMake(padding, bottomOfLabel + padding, itemWidth, itemHeight);
+    
+}
 
 @end

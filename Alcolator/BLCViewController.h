@@ -10,4 +10,10 @@
 
 @interface BLCViewController : UIViewController
 
+@property (weak, nonatomic) UITextField *beerPercentTextField;
+@property (weak, nonatomic) UISlider *beerCountSlider;
+@property (weak, nonatomic) UILabel *resultLabel;
+@property (weak, nonatomic) UILabel *beerCounter;
+
+- (void)buttonPressed:(UIButton *)sender;
 @end
