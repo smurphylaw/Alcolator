@@ -16,8 +16,11 @@
 
 - (void) viewDidLoad {
     [super viewDidLoad];
-    self.title = NSLocalizedString(@"Whiskey", @"whiskey");
+    self.view.backgroundColor = [UIColor colorWithRed:0.992 green:0.992 blue:0.588 alpha:1]; //#fdfd96
     NSLog(@"Loaded Whiskey view");
+    
+    self.navigationItem.title = @"Whiskey";
+
 }
 
 - (void)buttonPressed:(UIButton *)sender;
@@ -56,8 +59,17 @@
     
     NSString *resultText = [NSString stringWithFormat:NSLocalizedString(@"%d %@ contains as much alcohol as %.1f %@ of whiskey.", nil), numberOfBeers, beerText, numberOfWhiskeyGlassesForEquivalentAlcoholAmount, whiskeyText];
     self.resultLabel.text = resultText;
-    self.resultLabel.textColor = [UIColor whiteColor];
+    self.resultLabel.textColor = [UIColor blueColor];
     self.resultLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:20.0f];
+}
+
+- (instancetype) init {
+    self = [super init];
+    if (self) {
+        self.title = NSLocalizedString(@"Whiskey", nil);
+        
+    }
+    return self;
 }
 
 @end
