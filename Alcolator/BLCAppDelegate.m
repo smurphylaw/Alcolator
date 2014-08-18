@@ -8,6 +8,7 @@
 
 #import "BLCAppDelegate.h"
 #import "BLCViewController.h"
+#import "BLCMainMenuViewController.h"
 
 @implementation BLCAppDelegate
 
@@ -15,8 +16,10 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
-    BLCViewController *viewController = [[BLCViewController alloc] init];
-    self.window.rootViewController = viewController;
+    BLCMainMenuViewController *mainMenuViewController = [[BLCMainMenuViewController alloc] init];
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:mainMenuViewController];
+    
+    self.window.rootViewController = navigationController;
     [self.window makeKeyAndVisible];
     return YES;
 }

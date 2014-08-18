@@ -21,6 +21,7 @@
 {
     // Calls the superclass' implementation
     [super viewDidLoad];
+    NSLog(@"Loaded Wine view");
     
     // Set our primary view's background color to cyanColor
     self.view.backgroundColor = [UIColor redColor];
@@ -56,6 +57,11 @@
     
     // Gets rid of the minimum number of lines on the label
     self.resultLabel.numberOfLines = 0;
+    self.beerCounter.numberOfLines = 0;
+    
+    //Setting title for View Controller
+    self.title = NSLocalizedString(@"Wine", @"wine");
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -81,10 +87,14 @@
     
     // Show and display slider number automatically
     int numberOfBeers = self.beerCountSlider.value;
+    NSLog(@"%@ %d", self.title, numberOfBeers);
+    self.title = [NSString stringWithFormat:NSLocalizedString(@"Wine: %d glasses", nil), numberOfBeers];
     
-    NSString *beerCountText = [NSString stringWithFormat:NSLocalizedString(@"Number of Beers: %d", nil), numberOfBeers];
-    self.beerCounter.text = beerCountText;
-    self.beerCounter.textColor = [UIColor whiteColor];
+    // Drop this block? Now the number is shown in the title, any need for the body of the app?
+    // NSString *beerCountText = [NSString stringWithFormat:NSLocalizedString(@"Number of Beers: %d", nil), numberOfBeers];
+    // self.beerCounter.text = beerCountText;
+    // self.beerCounter.textColor = [UIColor whiteColor];
+    
      
 }
 
@@ -149,6 +159,7 @@
     UILabel *label = [[UILabel alloc] init];
     UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] init];
+    UILabel *beerLabel = [[UILabel alloc] init];
     
     // Add each view and the gesture recognizer as the view's subviews
     [self.view addSubview:textField];
@@ -156,6 +167,7 @@
     [self.view addSubview:label];
     [self.view addSubview:button];
     [self.view addGestureRecognizer:tap];
+    [self.view addSubview:beerLabel];
     
     // Assign the views and gesture recognizer to our properties
     self.beerPercentTextField = textField;
@@ -163,7 +175,7 @@
     self.resultLabel = label;
     self.calculateButton = button;
     self.hideKeyboardTapGestureRecognizer = tap;
-    self.beerCounter = label;
+    self.beerCounter = beerLabel;
     
 }
 
@@ -196,20 +208,21 @@
         itemHeight = (isPhone) ? 22 : 44;
     }
     
-    self.beerPercentTextField.frame = CGRectMake(padding, padding + 10, itemWidth, itemHeight);
-            
-            
+    self.beerPercentTextField.frame = CGRectMake(padding, padding + 50, itemWidth, itemHeight);
+    
     CGFloat bottomOfTextField = CGRectGetMaxY(self.beerPercentTextField.frame);
     self.beerCountSlider.frame = CGRectMake(padding, bottomOfTextField + padding, itemWidth, itemHeight);
-            
-    CGFloat bottomOfSlider = CGRectGetMaxY(self.beerCountSlider.frame);
-    self.beerCounter.frame = CGRectMake(padding, bottomOfSlider + padding, itemWidth, itemHeight);
     
-    CGFloat bottomOfCountLabel = CGRectGetMaxY(self.beerCounter.frame);
-    self.resultLabel.frame = CGRectMake(padding, bottomOfCountLabel + padding, itemWidth, itemHeight * 4);
-            
+    CGFloat bottomOfSlider = CGRectGetMaxY(self.beerCountSlider.frame);
+    self.resultLabel.frame = CGRectMake(padding, bottomOfSlider + padding, itemWidth, itemHeight * 4);
+    
+    // Drop this based on the change in the sliderValueChange method?
+    // CGFloat bottomOfCountLabel = CGRectGetMaxY(self.beerCounter.frame);
+    // self.resultLabel.frame = CGRectMake(padding, bottomOfCountLabel + padding, itemWidth, itemHeight * 4);
+    
     CGFloat bottomOfLabel = CGRectGetMaxY(self.resultLabel.frame);
     self.calculateButton.frame = CGRectMake(padding, bottomOfLabel + padding, itemWidth, itemHeight);
+  
     
 }
 
