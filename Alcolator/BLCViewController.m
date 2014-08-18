@@ -23,14 +23,15 @@
     [super viewDidLoad];
     NSLog(@"Loaded Wine view");
     
-    // Set our primary view's background color to cyanColor
-    self.view.backgroundColor = [UIColor redColor];
+    // Set our primary view's background color
+    // self.view.backgroundColor = [UIColor redColor];
+    self.view.backgroundColor = [UIColor colorWithRed:0.741 green:0.925 blue:0.714 alpha:1]; //#bdecb6
     
     // Tells the text field that 'self', this instance of 'BLCViewController' should be treated as the text field's delegate
     self.beerPercentTextField.delegate = self;
     
     // Set the background color for beerPercentTextField to white
-    self.beerPercentTextField.backgroundColor = [UIColor lightGrayColor];
+    self.beerPercentTextField.backgroundColor = [UIColor whiteColor];
     
     // Set the placeholder text
     self.beerPercentTextField.placeholder = NSLocalizedString(@"% Alcohol Content Per Beer", @"Beer percent placeholder text");
@@ -38,7 +39,7 @@
     // Tells 'self.beerCountSlider' that when its value changes, it should call '[self -sliderViewChange:]'
     // This is equivalent to connecting the IBAction
     [self.beerCountSlider addTarget:self action:@selector(sliderValueChange:) forControlEvents:UIControlEventValueChanged];
-    self.beerCountSlider.minimumTrackTintColor = [UIColor yellowColor];
+    // self.beerCountSlider.minimumTrackTintColor = [UIColor yellowColor]; // Contradict with backgroundColor
     
     // Set the minimum and maximum number of beers
     self.beerCountSlider.minimumValue = 1;
@@ -50,7 +51,7 @@
     // Set the title of the button
     [self.calculateButton setTitle:NSLocalizedString(@"Calculate", @"Calculate command") forState:UIControlStateNormal];
     self.calculateButton.titleLabel.font = [UIFont fontWithName: @"Helvetica-Bold" size:20.0f];
-    self.calculateButton.tintColor = [UIColor whiteColor];
+    self.calculateButton.tintColor = [UIColor redColor];
     
     // Tells the tap gesture recognizer to call '[self -tapGestureDidFire:]' when it detect a tap.
     [self.hideKeyboardTapGestureRecognizer addTarget:self action:@selector(tapGestureDidFire:)];
@@ -59,8 +60,7 @@
     self.resultLabel.numberOfLines = 0;
     self.beerCounter.numberOfLines = 0;
     
-    //Setting title for View Controller
-    self.title = NSLocalizedString(@"Wine", @"wine");
+    
     
 }
 
@@ -85,10 +85,13 @@
     NSLog(@"Slider value changed to %f", sender.value);
     [self.beerPercentTextField resignFirstResponder];
     
-    // Show and display slider number automatically
-    int numberOfBeers = self.beerCountSlider.value;
-    NSLog(@"%@ %d", self.title, numberOfBeers);
-    self.title = [NSString stringWithFormat:NSLocalizedString(@"Wine: %d glasses", nil), numberOfBeers];
+    //Set up badge in Tab Bar with number of beers indicated by the beerCountSlider
+    [self.tabBarItem setBadgeValue:[NSString stringWithFormat:@"%d", (int) sender.value]];
+    
+    // Show and display slider number in title automatically
+    // int numberOfBeers = self.beerCountSlider.value;
+    // NSLog(@"%@ %d", self.title, numberOfBeers);
+    // self.title = [NSString stringWithFormat:NSLocalizedString(@"Wine: %d glasses", nil), numberOfBeers];
     
     // Drop this block? Now the number is shown in the title, any need for the body of the app?
     // NSString *beerCountText = [NSString stringWithFormat:NSLocalizedString(@"Number of Beers: %d", nil), numberOfBeers];
@@ -141,7 +144,7 @@
     
     NSString *resultText = [NSString stringWithFormat:NSLocalizedString(@"%d %@ contains as much alcohol as %.1f %@ of wine.", nil), numberOfBeers, beerText, numberOfWineGlassesForEquivalentAlcoholAmount, wineText];
     self.resultLabel.text = resultText;
-    self.resultLabel.textColor = [UIColor whiteColor];
+    self.resultLabel.textColor = [UIColor blueColor];
     self.resultLabel.font = [UIFont fontWithName:@"Helvetica-Bold" size:20.0f];
 }
 
@@ -225,5 +228,19 @@
   
     
 }
+
+- (instancetype) init {
+    self = [super init];
+    
+    if (self) {
+        self.title = NSLocalizedString(@"Wine", @"wine");
+        
+        // Since we don't have icons, let's move the title to the middle of the tab bar
+        [self.tabBarItem setTitlePositionAdjustment:UIOffsetMake(0, -18)];
+    }
+    
+    return self;
+}
+
 
 @end
